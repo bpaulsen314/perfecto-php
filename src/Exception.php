@@ -1,5 +1,5 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 use \Exception as PhpException;
 

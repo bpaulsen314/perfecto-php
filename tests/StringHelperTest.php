@@ -1,5 +1,5 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 use \PHPUnit_Framework_TestCase as TestCase;
 

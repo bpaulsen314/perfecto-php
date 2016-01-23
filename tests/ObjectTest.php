@@ -1,5 +1,5 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 use \PHPUnit_Framework_TestCase as TestCase;
 
@@ -37,7 +37,7 @@ class ObjectTest extends TestCase
         $stub->getUndefinedProperty();
     }
 
-    public function testMagicCallAddOK()
+    public function testMagicCallAdd()
     {
         $stub = new ObjectStub();
         $stub->addRelationship("OBJECT_123210");
@@ -47,7 +47,7 @@ class ObjectTest extends TestCase
         $this->assertCount(3, $relationships);
     }
 
-    public function testMagicCallIsOK()
+    public function testMagicCallIs()
     {
         $stub = new ObjectStub();
         $stub->setActive(true);
@@ -56,7 +56,7 @@ class ObjectTest extends TestCase
         $this->assertFalse($stub->isActive());
     }
 
-    public function testMagicCallSetGetOK()
+    public function testMagicCallSetGet()
     {
         $stub = new ObjectStub();
         $stub->setName("Name");

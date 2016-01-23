@@ -1,8 +1,15 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 class ArrayHelper extends AbstractSingleton
 {
+    public function areIdentical($arr1, $arr2)
+    {
+        $arr1_hash = $this->hash($arr1);
+        $arr2_hash = $this->hash($arr2);
+        return ($arr1_hash === $arr2_hash);
+    }
+
     public function camelNotateKeys($arr, $lowercaseFirst = true)
     {
         return $this->_notateKeys($arr, "camel", $lowercaseFirst);
@@ -34,6 +41,29 @@ class ArrayHelper extends AbstractSingleton
         }
     }
 
+    public function delete(&$arr, $key)
+    {
+        $key = $this->_cleanKey($key);
+
+        $deleted = false;
+
+        $key_pieces = explode(".", $key);
+        $current_key = array_shift($key_pieces);
+
+        if (is_array($arr) && array_key_exists($current_key, $arr)) {
+            if ($key_pieces) {
+                $deleted = $this->delete(
+                    $arr[$current_key], implode(".", $key_pieces)
+                );
+            } else {
+                unset($arr[$current_key]);
+                $deleted = true;
+            }
+        }
+
+        return $deleted;
+    }
+
     public function dashNotateKeys($arr)
     {
         return $this->_notateKeys($arr, "dash");
@@ -45,6 +75,7 @@ class ArrayHelper extends AbstractSingleton
         if (is_string($arr) && is_array($key)) {
             list($arr, $key) = array($key, $arr);
         }
+        $key = $this->_cleanKey($key);
 
         $values = array();
 
@@ -127,31 +158,27 @@ class ArrayHelper extends AbstractSingleton
         if (is_string($arr) && is_array($key)) {
             list($arr, $key) = array($key, $arr);
         }
+        $key = $this->_cleanKey($key);
 
-        $value = null;
+        $value = false;
 
-        if (is_array($arr) && is_string($key)) {
+        if (is_string($key) && (is_array($arr) || is_object($arr))) {
             $key_pieces = explode(".", $key);
             $key = array_shift($key_pieces);
 
-            if (is_array($arr)) {
-                if (array_key_exists($key, $arr)) {
-                    $value = $arr[$key];
-                }
-            } else if (is_object($arr)) {
-                if (property_exists($arr, $key)) {
-                    $value = $arr->{$key};
-                }
+            if (is_array($arr) && array_key_exists($key, $arr)) {
+                $value = $arr[$key];
+            } else if (is_object($arr) && property_exists($arr, $key)) {
+                $value = $arr->{$key};
             }
 
-            if (count($key_pieces) >= 1 && is_array($value)) {
-                $value = $this->getValue(
-                    $value, implode(".", $key_pieces)
-                );
-            } else if (count($key_pieces) == 1 && is_object($value)) {
-                $last_piece = array_pop($key_pieces);
-                if (property_exists($value, $last_piece)) {
-                    $value = $value->{$last_piece};
+            if ($key_pieces) {
+                if (is_array($value) || is_object($value)) {
+                    $value = $this->getValue(
+                        $value, implode(".", $key_pieces)
+                    );
+                } else {
+                    $value = false;
                 }
             }
         } else {
@@ -208,6 +235,7 @@ class ArrayHelper extends AbstractSingleton
         if (is_string($arr) && is_array($key)) {
             list($arr, $key) = array($key, $arr);
         }
+        $key = $this->_cleanKey($key);
 
         $hashed_arr = array();
 
@@ -266,9 +294,20 @@ class ArrayHelper extends AbstractSingleton
         return $is_list;
     }
 
+    public function setValue(&$arr, $key, $value, $safe = false)
+    {
+        $key = $this->_cleanKey($key);
+        $this->_setValueRecursive($arr, $key, $value, $safe);
+    }
+
     public function underscoreNotateKeys($arr)
     {
         return $this->_notateKeys($arr, "underscore");
+    }
+
+    private function _cleanKey($key)
+    {
+        return preg_replace("#\.+#", ".", $key);
     }
 
     private function _notateKeys($arr, $style = "camel", $lowercase_first = null)
@@ -300,5 +339,46 @@ class ArrayHelper extends AbstractSingleton
         }
 
         return $transformed_arr;
+    }
+
+    private function _setValueRecursive(&$arr, $key, $value, $safe = false, $prefix = "")
+    {
+        preg_match("#(?<current>[^.]*)(\.)?(?<next>.*)#", $key, $matches);
+        
+        if ($matches["current"]) {
+            $current = $matches["current"];
+
+            if ($matches["next"]) {
+                $next = $matches["next"];
+
+                if ($safe && array_key_exists($current, $arr) && !is_array($arr[$current])) {
+                    // TODO: Re-evalute exception usage.
+                    $message = "Can not address index in non array: ";
+                    $message .= "{$prefix}{$current}";
+                    throw new Exception($message);
+                }
+
+                if (!array_key_exists($current, $arr) || !is_array($arr[$current])) {
+                    $arr[$current] = [];
+                }
+                $this->setValue(
+                    $arr[$current], $next, $value, "{$prefix}{$current}."
+                );
+            } else if (
+                $safe && array_key_exists($current, $arr) &&
+                gettype($arr[$curr]) !== gettype($value)
+            ) {
+                // TODO: Re-evalute exception usage.
+                $type1 = gettype($arr[$curr]);
+                $type2 = gettype($value);
+                $message = "Can not change value type [$type1 => $type2]: ";
+                $message .= "{$prefix}{$current}";
+                throw new Exception($message);
+            } else {
+                $arr[$current] = $value;
+            }
+        } else {
+            $message = "Invalid key encountered: {$key}";
+        }
     }
 }

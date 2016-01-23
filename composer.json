@@ -3,18 +3,19 @@
     "authors": [
         {
             "name": "Ben Paulsen",
-            "email": "bpaulsen1980@gmail.com"
+            "email": "bpaulsen314@gmail.com"
         }
     ],
     "autoload": {
         "psr-4": {
-            "Perfecto\\": "src/"
+            "W3glue\\Perfecto\\": "src/"
         }
     },
     "require": {
 
     },
     "require-dev": {
-        "phpunit/phpunit": "4.1.*"
+        "phpunit/phpunit": "4.1.*",
+        "squizlabs/php_codesniffer": "2.4.*"
     }
 }

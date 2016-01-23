@@ -1,5 +1,5 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 class Object
 {
@@ -25,14 +25,14 @@ class Object
             $i_property_name = $instructions["property_name"];
             if (
                 in_array(
-                    $i_method_name, 
-                    array("_addToProperty", "_setProperty")
+                    $i_method_name, array("_addToProperty", "_setProperty")
                 )
             ) {
                 if (count($arguments) != 1) {
                     $class_name = get_class($this);
                     $message = "Too few or too many arguments given: ";
                     $message .= "{$class_name}->{$method_name}(...)";
+                    // TODO: Re-evaluate exception type thrown.
                     throw new Exception($message);
                 } else {
                     $this->{$i_method_name}($i_property_name, $arguments[0]);
@@ -44,15 +44,23 @@ class Object
             $class_name = get_class($this);
             $message = "Magic call method not defined: ";
             $message .= "{$class_name}->{$method_name}(...)";
+            // TODO: Re-evaluate exception type thrown.
             throw new Exception($message);
         }
 
         return $result;
     }
 
-    public function printR()
+    public function getOid()
     {
-        print_r($this);
+        return spl_object_hash($this);
+    }
+
+    public function dump($return = false)
+    {
+        // TODO: Align this method signature with var_export signature.
+        $result = var_export($this, $return);
+        return $result;
     }
 
     protected function _addToProperty($name, $value)
@@ -66,6 +74,7 @@ class Object
             $class_name = get_class($this);
             $message = "Cannot add to property; property does not exist: ";
             $message .= "{$class_name}->{$name}";
+            // TODO: Re-evaluate exception type thrown.
             throw new Exception($message);
         }
     }
@@ -80,6 +89,7 @@ class Object
             $class_name = get_class($this);
             $message = "Cannot evaluate property; property does not exist: ";
             $message .= "{$class_name}->{$name}";
+            // TODO: Re-evaluate exception type thrown.
             throw new Exception($message);
         }
 
@@ -96,6 +106,7 @@ class Object
             $class_name = get_class($this);
             $message = "Cannot get property; property does not exist: ";
             $message .= "{$class_name}->{$name}";
+            // TODO: Re-evaluate exception type thrown.
             throw new Exception($message);
         }
 
@@ -110,6 +121,7 @@ class Object
             $class_name = get_class($this);
             $message = "Cannot set property; property does not exist: ";
             $message .= "{$class_name}->{$name}";
+            // TODO: Re-evaluate exception type thrown.
             throw new Exception($message);
         }
     }

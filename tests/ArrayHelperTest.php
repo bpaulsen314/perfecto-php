@@ -1,11 +1,46 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 use \PHPUnit_Framework_TestCase as TestCase;
 
 class ArrayHelperTest extends TestCase
 {
-    public function testCamelNotateKeysNormal()
+    public function testAreIdentical()
+    {
+        $helper = ArrayHelper::getInstance();
+        $arr1 = [
+            "first_name" => "Ben",
+            "last_name" => "Paulsen",
+            "birthdate" => [
+                "month" => "October",
+                "day" => 15,
+                "year" => 1980
+            ]
+        ];
+        $arr2 = [
+            "first_name" => "Ben",
+            "birthdate" => [
+                "month" => "October",
+                "year" => 1980,
+                "day" => 15
+            ],
+            "last_name" => "Paulsen"
+        ];
+        $arr3 = [
+            "first_name" => "Benjamin",
+            "birthdate" => [
+                "month" => "October",
+                "year" => 1980,
+                "day" => 15
+            ],
+            "last_name" => "Paulsen"
+        ];
+        $this->assertTrue($helper->areIdentical($arr1, $arr2));
+        $this->assertFalse($helper->areIdentical($arr1, $arr3));
+        $this->assertFalse($helper->areIdentical($arr2, $arr3));
+    }
+
+    public function testCamelNotateKeys()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -21,7 +56,7 @@ class ArrayHelperTest extends TestCase
         );
     }
 
-    public function testCastNumericStringsNormal()
+    public function testCastNumericStrings()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -29,7 +64,21 @@ class ArrayHelperTest extends TestCase
         $this->_assertNoNumericStrings($data);
     }
 
-    public function testDashNotateKeysNormal()
+    public function testDelete()
+    {
+        $helper = ArrayHelper::getInstance();
+        $data = $this->_getData();
+        $deleted = $helper->delete($data, "teams.stl");
+        $this->assertFalse($deleted);
+        $team = $helper->getValue($data, "teams.STL");
+        $this->assertTrue(is_array($team));
+        $deleted = $helper->delete($data, "teams.STL");
+        $this->assertTrue($deleted);
+        $team = $helper->getValue($data, "teams.STL");
+        $this->assertFalse($team);
+    }
+
+    public function testDashNotateKeys()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -45,7 +94,7 @@ class ArrayHelperTest extends TestCase
         );
     }
 
-    public function testExtractValuesNormal()
+    public function testExtractValues()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -63,8 +112,8 @@ class ArrayHelperTest extends TestCase
 
         // key, array
         $last_names = $helper->extractValues(
-            "teams.players.last_name",
-            $data
+            $data,
+            "teams.players.last_name"
         );
         sort($last_names);
         $this->assertEquals(
@@ -73,15 +122,17 @@ class ArrayHelperTest extends TestCase
         );
     }
 
-    public function testGetValueNormal()
+    public function testGetValue()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
+        $sport_name = $helper->getValue("sport.name", $data);
+        $this->assertFalse($sport_name);
         $mascot = $helper->getValue("teams.STL.mascot", $data);
         $this->assertEquals($mascot, "Cardinals");
     }
 
-    public function testHashNormal()
+    public function testHash()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -100,7 +151,7 @@ class ArrayHelperTest extends TestCase
         $this->assertEquals($player_hash, $player_reversed_hash);
     }
 
-    public function testHashOnNormal()
+    public function testHashOn()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -129,7 +180,7 @@ class ArrayHelperTest extends TestCase
         $this->assertEquals($keys, array("6", "20", "35"));
     }
 
-    public function testIsHashTableNormal()
+    public function testIsHashTable()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -145,7 +196,7 @@ class ArrayHelperTest extends TestCase
         $this->assertFalse($is_hash_table);
     }
 
-    public function testIsListNormal()
+    public function testIsList()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();
@@ -161,7 +212,7 @@ class ArrayHelperTest extends TestCase
         $this->assertFalse($is_list);
     }
 
-    public function testUnderscoreNotateKeysNormal()
+    public function testUnderscoreNotateKeys()
     {
         $helper = ArrayHelper::getInstance();
         $data = $this->_getData();

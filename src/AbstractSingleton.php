@@ -1,5 +1,5 @@
 <?php
-namespace Perfecto;
+namespace W3glue\Perfecto;
 
 abstract class AbstractSingleton extends Object
 {
