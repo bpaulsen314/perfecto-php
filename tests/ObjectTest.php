@@ -5,7 +5,7 @@ use \PHPUnit_Framework_TestCase as TestCase;
 
 class ObjectStub extends Object
 {
-    protected static $_magic_call_methods = array(
+    protected static $_magicCallMethods = array(
         "addRelationship" => true,
         "getCode" => true,
         "getDescription" => true,

@@ -3,23 +3,23 @@ namespace W3glue\Perfecto;
 
 class Object
 {
-    protected static $_magic_call_methods = null;
+    protected static $_magicCallMethods = null;
 
     public static function getMagicCallMethods()
     {
-        if (!is_array(static::$_magic_call_methods)) {
-            static::$_magic_call_methods = array();
+        if (!is_array(static::$_magicCallMethods)) {
+            static::$_magicCallMethods = array();
         }
-        return static::$_magic_call_methods;
+        return static::$_magicCallMethods;
     }
 
     public function __call($method_name, $arguments) 
     {
         $result = null;
 
-        $magic_call_methods = static::getMagicCallMethods();
+        $magicCallMethods = static::getMagicCallMethods();
 
-        if (array_key_exists($method_name, $magic_call_methods)) {
+        if (array_key_exists($method_name, $magicCallMethods)) {
             $instructions = $this->_getMagicCallInstructions($method_name);
             $i_method_name = $instructions["method_name"];
             $i_property_name = $instructions["property_name"];
@@ -141,7 +141,7 @@ class Object
         ) {
             $instructions["method_name"] = "_setProperty";
             $instructions["property_name"] = "_" . 
-                $string_helper->underscoreNotate($matches["property_name"]);
+                $string_helper->camelNotate($matches["property_name"], true);
         } else if  (
             preg_match(
                 "#^get(?P<property_name>[A-Z][A-Za-z0-9]*)$#", 
@@ -151,7 +151,7 @@ class Object
         ) {
             $instructions["method_name"] = "_getProperty";
             $instructions["property_name"] = "_" . 
-                $string_helper->underscoreNotate($matches["property_name"]);
+                $string_helper->camelNotate($matches["property_name"], true);
         } else if (
             preg_match(
                 "#^(evaluate|is)(?P<property_name>[A-Z][A-Za-z0-9]*)$#",
@@ -161,7 +161,7 @@ class Object
         ) {
             $instructions["method_name"] = "_evaluateProperty";
             $instructions["property_name"] = "_" . 
-                $string_helper->underscoreNotate($matches["property_name"]);
+                $string_helper->camelNotate($matches["property_name"], true);
         } else if (
             preg_match(
                 "#^add(?P<property_name>[A-Z][A-Za-z0-9]*)$#",
@@ -171,7 +171,7 @@ class Object
         ) {
             $instructions["method_name"] = "_addToProperty";
             $instructions["property_name"] = "_" . 
-                $string_helper->underscoreNotate($matches["property_name"]);
+                $string_helper->camelNotate($matches["property_name"], true);
             $instructions["property_name"] = $string_helper->pluralize(
                 $instructions["property_name"]
             );
