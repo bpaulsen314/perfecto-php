@@ -12,6 +12,7 @@ class StringHelperTest extends TestCase
         $this->assertEquals($helper->camelNotate("string_helper", true), "stringHelper");
         $this->assertEquals($helper->camelNotate("string-helper"), "StringHelper");
         $this->assertEquals($helper->camelNotate("string-helper", true), "stringHelper");
+        $this->assertEquals($helper->camelNotate("string helper", true), "stringHelper");
     }
 
     public function testDashNotate()

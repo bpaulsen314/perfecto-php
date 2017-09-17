@@ -156,7 +156,7 @@ class StringHelper extends AbstractSingleton
     private function _getWords($str)
     {
         $str = preg_replace("#[A-Z]+[a-z]#", "_\\0", $str);
-        $words = preg_split("#[_-]+#", $str);
+        $words = preg_split("#([_-]|\s)+#", $str);
         $real_words = array();
         foreach ($words as $word) {
             if (trim($word) !== "") {
