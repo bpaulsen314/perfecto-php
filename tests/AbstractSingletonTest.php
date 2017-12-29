@@ -1,5 +1,5 @@
 <?php
-namespace W3glue\Perfecto;
+namespace Bpaulsen314\Perfecto;
 
 use \PHPUnit_Framework_TestCase as TestCase;
 
@@ -17,7 +17,7 @@ class AbstractSingletonTest extends TestCase
     {
         $singleton1 = SingletonStub::getInstance();
         $this->assertInstanceOf(
-            "W3glue\\Perfecto\\SingletonStub", $singleton1
+            "Bpaulsen314\\Perfecto\\SingletonStub", $singleton1
         );
 
         $singleton2 = SingletonStub::getInstance();
@@ -25,7 +25,7 @@ class AbstractSingletonTest extends TestCase
 
         $singleton3 = ChildSingletonStub::getInstance();
         $this->assertInstanceOf(
-            "W3glue\\Perfecto\\ChildSingletonStub", $singleton3
+            "Bpaulsen314\\Perfecto\\ChildSingletonStub", $singleton3
         );
         $this->assertNotEquals($singleton1, $singleton3);
     }
